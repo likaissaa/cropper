@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" href="css/cropper.css" />
+		<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="js/cropper.js"></script>
+		<script type="text/javascript" src="js/vue2.5.js"></script>
+	</head>
+
+	<body>
+		<div id="app">
+
+			
+			<!--
+				Vue2.5
+				封装cropper 进入 vue中
+				1按钮样式封装  开始确定删除
+				2
+			-->
+			<cropper @surecrop="surecrop">333</cropper>
+
+			<div style="width:100px;height:70px;margin-top：40px!important;overflow:hidden;" ref="preview">
+				预览窗口
+			</div>
+			<div id="first" style="width:100px;height:100px;border:2px solid black;">
+				<img v-bind:src="gg" ref="myimg" style="width: 90%;height:90%" alt="显示截图成功的图片"/>
+			</div>
+		</div>
+	</body>
+	<script>
+
+
+		Vue.component('cropper', {
+			template: '\
+			<div>\
+			<button type="button" class="btn btn-primary" v-on:click="start">开始剪切</button>\
+			<button type="button" class="btn btn-primary" v-on:click="sure" v-show="sureme">确定</button>\
+			<button type="button" class="btn btn-primary" v-on:click="clean" v-show="deleteme">删除</button>\
+			<div style="width:800px;height:500px;box-sizing:border-box;border:1px solid red;">\
+				<img ref="haha" src="img/456.png" style="width:100%;"/>\
+			</div>\
+			</div>',
+			data: function() {
+				return {
+					sureme: false,
+					deleteme: false,
+				}
+			},
+			mounted: function() {
+			},
+			beforeDestroy: function() {
+				console.log(1111111111111);
+			},
+			methods: {
+				start: function() {
+					console.log(this.$vnode)
+					console.log(this.$vnode.context)
+					console.log(this.$vnode.context.$refs.preview)//获取父亲组件的ref
+					//aspectRatio ：NaN 可切换成 自由模式
+					$(this.$refs.haha).cropper({
+						aspectRatio: 10 / 7,
+						autoCrop: true,
+						background: false,
+						viewMode: 2,
+						preview: this.$vnode.context.$refs.preview /*预览*/
+
+					})
+					this.sureme = true;
+					this.deleteme = true
+				},
+				sure: function() {
+					var dataUrl = $(this.$refs.haha).cropper("getCroppedCanvas");
+					var a = new Array(dataUrl, $(this.$refs.haha))
+					this.$emit("surecrop", a)
+					this.sureme = false;
+					this.deleteme = false
+				},
+				clean: function() {
+
+					$(this.$refs.haha).cropper("clear");
+					$(this.$refs.haha).cropper("destroy");
+					this.sureme = false;
+					this.deleteme = false;
+				}
+
+			}
+		})
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				message: 'wocao',
+				jietu: '',
+				gg: '',
+				myc: ''
+			},
+			methods: {
+				surecrop: function(a) {
+					//开放确定按钮的后续清除
+					console.log(a[0])
+					vm.gg = a[0].toDataURL()
+					a[1].cropper("clear");
+					a[1].cropper("destroy");
+				}
+			}
+		})
+	</script>
+
+</html>
