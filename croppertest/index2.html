@@ -13,7 +13,6 @@
 	<body>
 		<div id="app">
 
-			
 			<!--
 				Vue2.5
 				封装cropper 进入 vue中
@@ -26,13 +25,11 @@
 				预览窗口
 			</div>
 			<div id="first" style="width:100px;height:100px;border:2px solid black;">
-				<img v-bind:src="gg" ref="myimg" style="width: 90%;height:90%" alt="显示截图成功的图片"/>
+				<img v-bind:src="gg" ref="myimg" style="width: 90%;height:90%" alt="显示截图成功的图片" />
 			</div>
 		</div>
 	</body>
 	<script>
-
-
 		Vue.component('cropper', {
 			template: '\
 			<div>\
@@ -49,8 +46,7 @@
 					deleteme: false,
 				}
 			},
-			mounted: function() {
-			},
+			mounted: function() {},
 			beforeDestroy: function() {
 				console.log(1111111111111);
 			},
@@ -58,32 +54,36 @@
 				start: function() {
 					console.log(this.$vnode)
 					console.log(this.$vnode.context)
-					console.log(this.$vnode.context.$refs.preview)//获取父亲组件的ref
-					//aspectRatio ：NaN 可切换成 自由模式
-					$(this.$refs.haha).cropper({
-						aspectRatio: 10 / 7,
-						autoCrop: true,
-						background: false,
-						viewMode: 2,
-						preview: this.$vnode.context.$refs.preview /*预览*/
-
+					console.log(this.$vnode.context.$refs.preview) //获取父亲组件的ref
+						//aspectRatio ：NaN 可切换成 自由模式
+					this.$nextTick(function() {
+						$(this.$refs.haha).cropper({
+							aspectRatio: 10 / 7,
+							autoCrop: true,
+							background: false,
+							viewMode: 2,
+							preview: this.$vnode.context.$refs.preview /*预览*/
+						})
+						this.sureme = true;
+						this.deleteme = true
 					})
-					this.sureme = true;
-					this.deleteme = true
 				},
 				sure: function() {
-					var dataUrl = $(this.$refs.haha).cropper("getCroppedCanvas");
-					var a = new Array(dataUrl, $(this.$refs.haha))
-					this.$emit("surecrop", a)
-					this.sureme = false;
-					this.deleteme = false
+					this.$nextTick(function(){
+						var dataUrl = $(this.$refs.haha).cropper("getCroppedCanvas");
+						var a = new Array(dataUrl, $(this.$refs.haha))
+						this.$emit("surecrop", a)
+						this.sureme = false;
+						this.deleteme = false
+					})
 				},
 				clean: function() {
-
+					this.$nextTick(function(){
 					$(this.$refs.haha).cropper("clear");
 					$(this.$refs.haha).cropper("destroy");
 					this.sureme = false;
 					this.deleteme = false;
+					})
 				}
 
 			}
@@ -98,11 +98,13 @@
 			},
 			methods: {
 				surecrop: function(a) {
-					//开放确定按钮的后续清除
-					console.log(a[0])
-					vm.gg = a[0].toDataURL()
-					a[1].cropper("clear");
-					a[1].cropper("destroy");
+					this.$nextTick(function(){
+						//开放确定按钮的后续清除
+						console.log(a[0])
+						vm.gg = a[0].toDataURL()
+						a[1].cropper("clear");
+						a[1].cropper("destroy");
+					})
 				}
 			}
 		})
